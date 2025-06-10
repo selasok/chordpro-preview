@@ -14,7 +14,7 @@ A simple and modern web-based ChordPro previewer. It uses [ChordSheetJS](https:/
 ### 1. Clone or download the project
 
 ```bash
-git clone https://github.com/yourusername/chordpro-previewer.git
+git clone https://github.com/selasok/chordpro-preview.git
 ```
 
 
@@ -24,4 +24,4 @@ Just open index.html in your favorite browser. No build step needed.
 
 ## 🌐 Live Demo
 You can view the live version here:
-https://yourusername.github.io/chordpro-previewer/
+https://selasok.github.io/chordpro-preview/
