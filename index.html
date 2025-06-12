@@ -4,29 +4,31 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer&display=swap" rel="stylesheet">
     <title>ChordPro Previewer</title>
     <style>
         * {
             box-sizing: border-box;
         }
 
+        @font-face {
+                font-family: 'Noto Serif Khmer';
+                src: url("{% static 'fonts/NotoSerifKhmer-Bold.woff2' %}") format('woff2');
+                font-weight: d;
+                font-style: normal;
+                font-display: swap;
+            }
+
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Noto Serif Khmer', serif;
             background-color: #f0f2f5;
             color: #333;
             height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        header {
-            background-color: #4a90e2;
-            color: white;
-            padding: 16px 24px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .toolbar {
@@ -83,7 +85,6 @@
             width: 100%;
             height: 100%;
             padding: 12px;
-            font-family: monospace;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -92,14 +93,12 @@
         }
 
         .preview {
-            font-family: monospace;
             font-size: 16px;
             white-space: pre-wrap;
             background-color: #ffffff;
             padding: 16px;
             border-radius: 6px;
             border: 1px solid #ddd;
-            min-height: 100%;
         }
 
         .row {
@@ -113,30 +112,45 @@
             position: relative;
         }
 
+        .column .chord:not(:empty) + .lyrics:empty::before {
+            content: '\00a0';
+            display: inline-block;
+            min-width: 3ch;
+        }
+
         .chord {
+            font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
             font-weight: 600;
             color: #20c997;
             position: absolute;
             top: 0;
             left: 0;
-            white-space: pre;
-            line-height: 1;
-            padding-right: 8px;
+            white-space: pre-wrap;
+            font-size: 16px;
         }
+
+        .lyrics {
+            padding: 1.2em 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
 
         .paragraph.intro .column {
             padding: 0 1rem;
         }
 
-        .label {
-            color: #20c997;
+        .paragraph {
+            padding-bottom: 1rem;
         }
 
-        .lyrics {
-            display: inline-block;
-            padding: 1.2em 0;
-            white-space: pre-wrap;
+        .label {
+            color: #20c997;
+            padding: 0.5rem 0;
+            font-style: italic;
+            font-size: 1rem;
         }
+
 
         @media (max-width: 768px) {
             .container {
@@ -154,8 +168,6 @@
 </head>
 
 <body>
-    <header>🎸 ChordPro Previewer</header>
-
     <div class="toolbar">
         <label>
             <input type="checkbox" id="liveToggle" checked />
