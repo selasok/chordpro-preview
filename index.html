@@ -104,7 +104,7 @@
             position: relative;
         }
 
-        .column .chord:not(:empty) + .lyrics:empty::before {
+        .column .chord:not(:empty)+.lyrics:empty::before {
             content: '\00a0';
             display: inline-block;
             min-width: 3ch;
@@ -143,6 +143,16 @@
             font-size: 1rem;
         }
 
+        .recent-saved {
+            width: 250px;
+            padding: 6px;
+            border: none;
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
 
         @media (max-width: 768px) {
             .container {
@@ -173,7 +183,12 @@
         <button onclick="updatePreview(input.value)">Update Preview</button>
         <button onclick="downloadChordPro()">Download</button>
         <button onclick="loadSample()">Load Sample</button>
+        <div>
+            <select name="recent-saved" id="recent-saved" class="recent-saved">
+            </select>
+        </div>
     </div>
+
 
     <div class="container">
         <div class="left">
@@ -187,90 +202,8 @@
     </div>
 
     <script src="lib/bundle.min.js"></script>
-    <script>
-        const input = document.getElementById('chordProInput');
-        const preview = document.getElementById('preview');
-        const liveToggle = document.getElementById('liveToggle');
-        const autoSaveToggle = document.getElementById('autoSave');
-        const parser = new ChordSheetJS.ChordProParser();
-        const formatter = new ChordSheetJS.HtmlDivFormatter();
+    <script src="script.js"></script>
 
-        function updatePreview(content) {
-            try {
-                const song = parser.parse(content);
-                preview.innerHTML = formatter.format(song);
-            } catch (e) {
-                preview.innerHTML = `<span style="color: red;">Error parsing: ${e.message}</span>`;
-            }
-        }
-
-        function saveUserPreferences() {
-            const preferences = {
-                livePreview: liveToggle.checked,
-                autoSave: autoSaveToggle.checked
-            };
-            localStorage.setItem('userPreferences', JSON.stringify(preferences));
-        }
-
-        function saveChordProContent(content) {
-            localStorage.setItem('chordProContent', content);
-        }
-
-        function loadPreferences() {
-            const preferences = JSON.parse(localStorage.getItem('userPreferences')) || {};
-            liveToggle.checked = !!preferences.livePreview;
-            autoSaveToggle.checked = !!preferences.autoSave;
-        }
-
-        function loadChordProContent() {
-            const content = localStorage.getItem('chordProContent');
-            if (content) {
-                input.value = content;
-            }
-            if (liveToggle.checked) {
-                updatePreview(input.value);
-            }
-        }
-
-        function downloadChordPro() {
-            const blob = new Blob([input.value], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'song.chopro';
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function loadSample() {
-            const sample = `[C]This is a [G]simple [Am]sample song\n[F]With chords and lyrics\n[C]Hope you [G]like it!`;
-            input.value = sample;
-            updatePreview(sample);
-        }
-
-        [liveToggle, autoSaveToggle].forEach(toggle =>
-            toggle.addEventListener('change', saveUserPreferences)
-        );
-
-        input.addEventListener('input', () => {
-            const content = input.value;
-
-            if (liveToggle.checked) {
-                updatePreview(content);
-            }
-
-            if (autoSaveToggle.checked) {
-                saveChordProContent(content);
-            }
-        });
-
-        // Initialize on page load
-        window.onload = () => {
-            loadPreferences();
-            loadChordProContent();
-        };
-    </script>
-    
 </body>
 
 </html>
