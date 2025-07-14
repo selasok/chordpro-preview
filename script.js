@@ -9,9 +9,22 @@ let formatter = new ChordSheetJS.HtmlDivFormatter();
 const urlParams = new URLSearchParams(window.location.search);
 window.songId = urlParams.get('songId');
 
-async function getSongContent() {
-    const response = await fetch(`http://127.0.0.1:8000/get_content?song_id=${songId}`);
-    return await response.json();
+async function getSongContent(songId) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/get_content?song_id=${songId}`);
+        const data = await response.json();
+
+        if (data.status) {
+            console.log("Message:", data.message);
+            return data.data;
+        } else {
+            console.error("Error:", data.message);
+            return null;
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        return null;
+    }
 }
 
 
@@ -81,10 +94,16 @@ function saveChordPro() {
             return response.json();
         })
         .then(data => {
-            if (data) {
-                alert("Status: " + data.message);
+            if (data.status) {
+                console.log("Message:", data.message);
+                alert(data.message);
+            } else {
+                console.log(data.status + data.message);
             }
-        });
+        })
+        .catch(error => {
+            console.error("Error saving content");
+        })
 }
 
 input.addEventListener('input', () => {
@@ -101,7 +120,7 @@ function setSongIdNumber(songId) {
 }
 
 async function initialize() {
-    const data = await getSongContent()
+    const data = await getSongContent(songId);
     if (data) {
         setSongIdNumber(data.id);
         input.value = data.content;

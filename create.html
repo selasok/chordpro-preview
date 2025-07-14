@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer&display=swap" rel="stylesheet">
@@ -117,7 +117,7 @@
             position: relative;
         }
 
-        .column .chord:not(:empty) + .lyrics:empty::before {
+        .column .chord:not(:empty)+.lyrics:empty::before {
             content: '\00a0';
             display: inline-block;
             min-width: 2ch;
@@ -180,41 +180,39 @@
             font-size: 0.8rem;
             color: #4a90e2;
         }
-
     </style>
 </head>
 
 <body>
-<div class="toolbar">
-    <div class="left-group">
-        <button onclick="loadSample()">Load Sample</button>
-        <button onclick="saveChordPro()">Save</button>
+    <div class="toolbar">
+        <div class="left-group">
+            <button onclick="loadSample()">Load Sample</button>
+            <button onclick="saveChordPro()">Save</button>
 
-    </div>
-    <div class="title-section">
-        <p id="songTitle" class="song-tile"></p>
-        <p id="songIdNumber"></p>
-    </div>
-    <div class="right-group">
-        <
-        <button onclick="downloadChordPro()">Download</button>
-    </div>
-</div>
-
-
-<div class="container">
-    <div class="left">
-        <textarea id="chordProInput" placeholder="[C]This is [G]my song"></textarea>
-    </div>
-    <div class="right">
-        <div id="preview" class="preview">
-            <!-- Rendered preview will appear here -->
+        </div>
+        <div class="title-section">
+            <p id="songTitle" class="song-tile"></p>
+            <p id="songIdNumber"></p>
+        </div>
+        <div class="right-group">
+            <button onclick="downloadChordPro()">Download</button>
         </div>
     </div>
-</div>
 
-<script src="lib/bundle.min.js"></script>
-<script src="script.js"></script>
+
+    <div class="container">
+        <div class="left">
+            <textarea id="chordProInput" placeholder="[C]This is [G]my song"></textarea>
+        </div>
+        <div class="right">
+            <div id="preview" class="preview">
+                <!-- Rendered preview will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/bundle.min.js"></script>
+    <script src="script.js"></script>
 
 </body>
 

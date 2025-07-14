@@ -137,16 +137,22 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error("Network response was not ok");
+                    throw new Error("Network response was not OK");
                 }
                 return response.json();
             })
             .then(data => {
-                console.log("Song created:", data);
-                updateSongList();
+                if (data.status) {
+                    console.log("Song created:", data.message);
+                    updateSongList();
+                } else {
+                    console.error("Failed to create song:", data.message);
+                    alert("Error: " + data.message);
+                }
             })
             .catch(error => {
                 console.error("Error creating song:", error);
+                alert("Unexpected error creating song. See console for details.");
             });
     }
 
@@ -171,13 +177,17 @@
     function get_songs() {
         return fetch("http://127.0.0.1:8000/songs")
             .then(res => res.json())
-            .then(data => {
-                if (data.length > 0) {
-                    return data;
+            .then(response => {
+                if (response.status && Array.isArray(response.data) && response.data.length > 0) {
+                    return response.data;
                 } else {
-                    console.log("not found");
+                    console.log("No songs found or error:", response.message);
                     return [];
                 }
+            })
+            .catch(err => {
+                console.error("Fetch error:", err);
+                return [];
             });
     }
 
