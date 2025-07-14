@@ -25,70 +25,84 @@
 
         .toolbar {
             background: #ffffff;
-            padding: 10px 20px;
+            padding: 12px 24px;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
             border-bottom: 1px solid #ddd;
+            justify-content: space-between;
+        }
+
+        .toolbar .left-group,
+        .toolbar .right-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .toolbar button,
-        .toolbar label {
+        .toolbar select {
             font-size: 14px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
         }
 
         .toolbar button {
-            padding: 6px 12px;
-            border: none;
             background-color: #4a90e2;
             color: white;
-            border-radius: 4px;
-            cursor: pointer;
         }
 
         .toolbar button:hover {
             background-color: #357bd8;
         }
 
+        .toolbar select {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+
         .container {
             flex: 1;
             display: flex;
             height: 100%;
+            overflow: hidden;
         }
 
         .left,
         .right {
             flex: 1;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .left {
             background-color: #ffffff;
             border-right: 1px solid #ddd;
-        }
-
-        .right {
-            background-color: #fafafa;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         textarea {
             width: 100%;
-            height: 100%;
-            padding: 12px;
+            flex: 1;
+            padding: 14px;
             font-size: 16px;
+            font-family: monospace;
             border: 1px solid #ccc;
             border-radius: 6px;
             resize: none;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .preview {
             font-size: 16px;
             white-space: pre-wrap;
             background-color: #ffffff;
-            padding: 16px;
+            padding: 20px;
             border-radius: 6px;
             border: 1px solid #ddd;
         }
@@ -99,7 +113,6 @@
             position: relative;
         }
 
-
         .column {
             position: relative;
         }
@@ -107,7 +120,7 @@
         .column .chord:not(:empty) + .lyrics:empty::before {
             content: '\00a0';
             display: inline-block;
-            min-width: 3ch;
+            min-width: 2ch;
         }
 
         .chord {
@@ -122,37 +135,27 @@
         }
 
         .lyrics {
-            padding: 1.2em 0;
+            padding: 1.4em 0 0.6em;
             white-space: pre-wrap;
             font-family: monospace;
         }
 
-
-        .paragraph.intro .column {
-            padding: 0 1rem;
-        }
-
         .paragraph {
-            padding-bottom: 1rem;
+            padding-bottom: 0.8rem;
         }
 
         .label {
             color: #20c997;
-            padding: 0.5rem 0;
             font-style: italic;
-            font-size: 1rem;
+            font-size: 0.8rem;
+            padding: 0.2rem 0;
         }
 
-        .dropdown {
-            width: 250px;
-            padding: 6px;
-            border: none;
-            background-color: #4a90e2;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
+        .song-id-number {
+            color: #4a90e2;
+            font-size: 10px;
+            align-items: center;
         }
-
 
         @media (max-width: 768px) {
             .container {
@@ -167,31 +170,34 @@
             }
         }
 
-        .toolbar-song {
+        .title-section {
             display: flex;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
+            align-items: center;
         }
 
-        .label-text {
-            font-size: 14px;
-            margin-right: 10px;
+        #songIdNumber {
+            padding-left: 1rem;
+            font-size: 0.8rem;
+            color: #4a90e2;
         }
+
     </style>
 </head>
 
 <body>
 <div class="toolbar">
-    <button onclick="downloadChordPro()">Download</button>
-    <button onclick="loadSample()">Load Sample</button>
-    <button onclick="saveSong()">Save Song</button>
-    <div>
-        <label for="recent-saved" class="label-text"></label>
-        <select name="recent-saved" id="recent-saved" class="dropdown recent-saved">
-            <option value="">Auto saved history</option>
-        </select>
+    <div class="left-group">
+        <button onclick="loadSample()">Load Sample</button>
+        <button onclick="saveChordPro()">Save</button>
+
+    </div>
+    <div class="title-section">
+        <p id="songTitle" class="song-tile"></p>
+        <p id="songIdNumber"></p>
+    </div>
+    <div class="right-group">
+        <
+        <button onclick="downloadChordPro()">Download</button>
     </div>
 </div>
 

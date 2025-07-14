@@ -2,12 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer&display=swap" rel="stylesheet">
-    <title>ChordPro Previewer</title>
+    <meta charset="UTF-8">
+    <title>List</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,195 +11,223 @@
 
         body {
             margin: 0;
+            padding: 2rem 5%;
             font-family: 'Noto Serif Khmer', serif;
-            background-color: #f0f2f5;
+            background-color: #f8f9fa;
             color: #333;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        .toolbar {
-            background: #ffffff;
-            padding: 10px 20px;
+        h1 {
+            text-align: center;
+            color: #0245af;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .content-header {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
             gap: 10px;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
         }
 
-        .toolbar button,
-        .toolbar label {
-            font-size: 14px;
+        .content-header p {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 0;
         }
 
-        .toolbar button {
-            padding: 6px 12px;
-            border: none;
-            background-color: #4a90e2;
+        .add-button {
+            background-color: #4CAF50;
             color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .toolbar button:hover {
-            background-color: #357bd8;
-        }
-
-        .container {
-            flex: 1;
-            display: flex;
-            height: 100%;
-        }
-
-        .left,
-        .right {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .left {
-            background-color: #ffffff;
-            border-right: 1px solid #ddd;
-        }
-
-        .right {
-            background-color: #fafafa;
-            overflow-y: auto;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            resize: none;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .preview {
-            font-size: 16px;
-            white-space: pre-wrap;
-            background-color: #ffffff;
-            padding: 16px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-        }
-
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            position: relative;
-        }
-
-
-        .column {
-            position: relative;
-        }
-
-        .column .chord:not(:empty)+.lyrics:empty::before {
-            content: '\00a0';
-            display: inline-block;
-            min-width: 3ch;
-        }
-
-        .chord {
-            font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
-            font-weight: 600;
-            color: #20c997;
-            position: absolute;
-            top: 0;
-            left: 0;
-            white-space: pre-wrap;
-            font-size: 16px;
-        }
-
-        .lyrics {
-            padding: 1.2em 0;
-            white-space: pre-wrap;
-            font-family: monospace;
-        }
-
-
-        .paragraph.intro .column {
-            padding: 0 1rem;
-        }
-
-        .paragraph {
-            padding-bottom: 1rem;
-        }
-
-        .label {
-            color: #20c997;
-            padding: 0.5rem 0;
-            font-style: italic;
+            border: none;
+            padding: 10px 18px;
             font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
         }
 
-        .recent-saved {
-            width: 250px;
-            padding: 6px;
-            border: none;
-            background-color: #4a90e2;
-            color: white;
-            border-radius: 4px;
+        .add-button:hover {
+            background-color: #45a049;
+        }
+
+        .song-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .song-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 14px 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
         }
 
+        .song-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
 
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
+        .song-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0245af;
+            margin-bottom: 0.3rem;
+        }
 
-            .left,
-            .right {
+        .song-timestamp {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .song-item.empty {
+            text-align: center;
+            font-style: italic;
+            color: #aaa;
+            border-left: none;
+            background-color: transparent;
+            box-shadow: none;
+            cursor: default;
+        }
+
+        .song-id {
+            font-weight: bold;
+        }
+
+        @media (max-width: 500px) {
+            .add-button {
                 width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #ddd;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="toolbar">
-        <label>
-            <input type="checkbox" id="liveToggle" checked />
-            Live Preview
-        </label>
-        <label>
-            <input type="checkbox" id="autoSave" checked />
-            Auto save
-        </label>
+<h1>List</h1>
 
-        <button onclick="updatePreview(input.value)">Update Preview</button>
-        <button onclick="downloadChordPro()">Download</button>
-        <button onclick="loadSample()">Load Sample</button>
-        <div>
-            <select name="recent-saved" id="recent-saved" class="recent-saved">
-            </select>
-        </div>
-    </div>
+<div class="content-header">
+    <p>Songs</p>
+    <button class="add-button" onclick="createNewSong()">Add New</button>
+</div>
+
+<div class="song-list" id="song-list"></div>
+
+<script>
+
+    async function inputSongTitle() {
+        return prompt('Enter title');
+    }
+
+    function requestCreateNewSong(title, created_date) {
+        fetch("http://127.0.0.1:8000/create_song", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                created_date: created_date
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Song created:", data);
+                updateSongList();
+            })
+            .catch(error => {
+                console.error("Error creating song:", error);
+            });
+    }
 
 
-    <div class="container">
-        <div class="left">
-            <textarea id="chordProInput" placeholder="[C]This is [G]my song"></textarea>
-        </div>
-        <div class="right">
-            <div id="preview" class="preview">
-                <!-- Rendered preview will appear here -->
-            </div>
-        </div>
-    </div>
+    async function createNewSong() {
+        const title = await inputSongTitle();
+        const created_date = new Date().toISOString();
 
-    <script src="lib/bundle.min.js"></script>
-    <script src="script.js"></script>
+        if (!title) {
+            alert('Please enter title!');
+            return;
+        }
 
+        requestCreateNewSong(title, created_date)
+    }
+
+
+    function openCreateSongPage(songId) {
+        window.location.href = `create.html?songId=${encodeURIComponent(songId)}`;
+    }
+
+    function get_songs() {
+        return fetch("http://127.0.0.1:8000/songs")
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    return data;
+                } else {
+                    console.log("not found");
+                    return [];
+                }
+            });
+    }
+
+
+    async function updateSongList() {
+        const songListWrapper = document.getElementById('song-list');
+        songListWrapper.innerHTML = '';
+        const savedSongs = await get_songs()
+
+        if (!savedSongs || savedSongs.length === 0) {
+            const emptyItem = document.createElement('div');
+            emptyItem.classList.add('song-item', 'empty');
+            emptyItem.textContent = 'No songs found. Click "Add New" to start.';
+            songListWrapper.appendChild(emptyItem);
+            return;
+        }
+
+        for (const song of savedSongs) {
+            const songItem = document.createElement('div');
+            songItem.classList.add('song-item');
+
+            const songTitle = document.createElement('p');
+            songTitle.textContent = song.title;
+            songTitle.classList.add('song-title');
+
+            const songIdNumber = document.createElement('p');
+            songIdNumber.textContent = "ID: " + song.id;
+            songIdNumber.classList.add('song-id');
+
+
+            const songTimestamp = document.createElement('p');
+            songTimestamp.textContent = new Date(song.created_date).toLocaleString();
+            songTimestamp.classList.add('song-timestamp');
+
+
+            songItem.appendChild(songTitle);
+            songItem.appendChild(songIdNumber);
+            songItem.appendChild(songTimestamp);
+
+            songItem.addEventListener('click', () => {
+                openCreateSongPage(song.id);
+            });
+
+            songListWrapper.appendChild(songItem);
+        }
+    }
+
+    updateSongList()
+
+</script>
 </body>
 
 </html>

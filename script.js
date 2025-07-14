@@ -1,12 +1,18 @@
 const input = document.getElementById('chordProInput');
 const preview = document.getElementById('preview');
-const liveToggle = document.getElementById('liveToggle');
-const autoSaveToggle = document.getElementById('autoSave');
-const recentSaved = document.getElementById('recent-saved')
+const songTitle = document.getElementById('songTitle');
+const songIdNumber = document.getElementById('songIdNumber');
 
-const parser = new ChordSheetJS.ChordProParser();
-const formatter = new ChordSheetJS.HtmlDivFormatter();
+let parser = new ChordSheetJS.ChordProParser();
+let formatter = new ChordSheetJS.HtmlDivFormatter();
 
+const urlParams = new URLSearchParams(window.location.search);
+window.songId = urlParams.get('songId');
+
+async function getSongContent() {
+    const response = await fetch(`http://127.0.0.1:8000/get_content?song_id=${songId}`);
+    return await response.json();
+}
 
 
 function updatePreview(content) {
@@ -18,115 +24,31 @@ function updatePreview(content) {
     }
 }
 
-function updateRecentSaved() {
-    const items = loadLocalStorage()
-    recentSaved.innerHTML = '';
-
-    for (let i = 0; i < items.length; i++) {
-        const data = items[i];
-
-        const option = document.createElement('option');
-        option.value = data.content;
-        option.textContent = `Saved at: ${new Date(data.timestamp).toLocaleString()}`;
-
-        recentSaved.appendChild(option);
-    }
-}
-
-function loadLocalStorage(type) {
-    const data = JSON.parse(localStorage.getItem(type)) || [];
-
-    if (!data) {
-        return;
-    }
-
-    if (type == 'chordProContent') {
-        items.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    }
-
-    return data;
-}
-
-function saveChordProContent(content) {
-    const timestamp = new Date().toISOString();
-    const newData = {
-        timestamp: timestamp,
-        content: content,
-    };
-
-    let oldData = loadLocalStorage()
-
-    oldData.push(newData);
-
-    if (oldData.length > 10) {
-        oldData = oldData.slice(-10);
-    }
-
-    localStorage.setItem('chordProContent', JSON.stringify(oldData));
-    updateRecentSaved();
-}
-
-function loadPreferences() {
-    const preferences = JSON.parse(localStorage.getItem('userPreferences')) || {};
-    liveToggle.checked = !!preferences.livePreview;
-    autoSaveToggle.checked = !!preferences.autoSave;
-}
-
-function loadChordProContent() {
-    const items = loadLocalStorage();
-
-    if (items.length > 0) {
-        const latest = items[0];
-        input.value = latest.content;
-
-        if (liveToggle.checked) {
-            updatePreview(latest.content);
-        }
-    }
-}
-
 function validateInput() {
     if (!input || input.value.trim() === '') {
         alert('Song is empty');
-        return false
+        return false;
     }
     return true;
 }
 
-function inputFileName() {
-    const fileName = prompt("Enter the file name:", "song");
-    if (!fileName) {
-        alert("Please input file name")
-        return false;
-    }
-    return fileName;
+function checkSongTitle() {
+    return songTitle.value.trim() !== '';
 }
 
-function getFileName() {
-    const fileName = prompt("Enter the file name:", "song");
-    if (!fileName || fileName.trim() === '') {
-        alert("Please input a valid file name.");
-        return null;
-    }
-    return fileName.trim();
-}
 
 function downloadChordPro() {
-    if (!validateInput()) {
-        return;
-    }
+    if (!validateInput()) return;
+    if (!checkSongTitle) return;
 
-    const fileName = getFileName();
-    if (!fileName) {
-        return;
-    }
-
-    const blob = new Blob([input.value], { type: 'text/plain' });
+    const blob = new Blob([input.value], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
+
     const link = document.createElement('a');
     link.href = url;
-    link.download = fileName.endsWith(".chopro") ? fileName : fileName + ".chopro"
+    link.download = `${songTitle.textContent}.chopro`;
     link.click();
+
     URL.revokeObjectURL(url);
 }
 
@@ -136,48 +58,58 @@ function loadSample() {
     updatePreview(sample);
 }
 
-[liveToggle, autoSaveToggle].forEach(toggle =>
-    toggle.addEventListener('change', () => {
-        data = {
-            livePreview: liveToggle.checked,
-            autoSave: autoSaveToggle.checked
-        };
+function saveChordPro() {
+    if (!validateInput()) return;
+    if (!checkSongTitle) return;
 
-        localStorage.setItem('userPreferences', JSON.stringify(data))
-    }
 
-    ));
-
-function debounce(func, delay) {
-    let timeoutId;
-    return function (...args) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(this, args), delay);
-    };
+    fetch("http://127.0.0.1:8000/add_content", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: parseInt(songId),
+            content: input.value,
+        }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                console.error("Error saving content");
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                alert("Status: " + data.message);
+            }
+        });
 }
-
-const debouncedSave = debounce(saveChordProContent, 5000);
 
 input.addEventListener('input', () => {
     const content = input.value;
-
-    if (liveToggle.checked) {
-        updatePreview(content);
-    }
-
-    if (autoSaveToggle.checked) {
-        debouncedSave(content);
-    }
-
+    updatePreview(content);
 });
 
-recentSaved.addEventListener('change', () => {
-    input.value = recentSaved.value;
-    updatePreview(input.value)
-});
+function setSongTitle(title) {
+    songTitle.textContent = title;
+}
+
+function setSongIdNumber(songId) {
+    songIdNumber.textContent = songId;
+}
+
+async function initialize() {
+    const data = await getSongContent()
+    if (data) {
+        setSongIdNumber(data.id);
+        input.value = data.content;
+        updatePreview(input.value);
+        setSongTitle(data.title);
+    }
+}
 
 window.onload = () => {
-    loadPreferences();
-    loadChordProContent();
-    updateRecentSaved();
+    initialize();
 };
